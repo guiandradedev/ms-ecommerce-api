@@ -1,10 +1,5 @@
-export enum TypeCode {
-    string,
-    number
-}
-
 type GenerateActivateCodeRequest = {
-    type: TypeCode,
+    type: 'string' | 'number',
     size: number,
     expiresIn?: Date
 }
@@ -13,13 +8,13 @@ export class GenerateUserCode {
     execute({ type, size, expiresIn }: GenerateActivateCodeRequest): {code: string, expiresIn: Date} {
         let code = ""
         switch (type) {
-            case TypeCode.string: {
+            case 'string': {
                 for(let i=0; i<size; i++) {
                     code += String.fromCharCode(65+Math.floor(Math.random() * 26));
                 }
                 break;
             }
-            case TypeCode.number: {
+            case 'number': {
                 for(let i=0; i<size; i++) {
                     code += Math.floor(Math.random() * 9);
                 }

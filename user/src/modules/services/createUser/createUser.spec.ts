@@ -5,12 +5,18 @@ import { InMemoryUserRepository } from '@/modules/repositories/inMemory/InMemory
 import { CreateUserUseCase } from './createUserUseCase'
 import { User } from '@/modules/domain'
 import { ErrAlreadyExists, ErrInvalidParam } from '@/shared/errors'
+import { InMemoryHashAdapter } from '@/modules/adapters/HashAdapter'
+import { InMemoryCodeRepository } from '@/modules/repositories/inMemory/InMemoryCodeRepository'
+import { InMemoryMessageBrokerAdapter } from '@/shared/adapters/MessageBrokerAdapter'
 
 describe('Create User', () => {
 
     const makeSut = async () => {
         const userRepository = new InMemoryUserRepository()
-        const sut = new CreateUserUseCase(userRepository)
+        const codeRepository = new InMemoryCodeRepository()
+        const hashAdapter = new InMemoryHashAdapter()
+        const messageBrokerAdapter = new InMemoryMessageBrokerAdapter()
+        const sut = new CreateUserUseCase(userRepository, codeRepository, hashAdapter, messageBrokerAdapter)
 
         return { userRepository, sut }
     }
