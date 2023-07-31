@@ -11,7 +11,7 @@ type AddressProps = {
     number: number,
     zipcode: string,
     from: FromSharedDomains,
-    ownerId: string,
+    customerId: string,
     createdAt: Date
 }
 

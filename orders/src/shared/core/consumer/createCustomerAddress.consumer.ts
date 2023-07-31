@@ -33,6 +33,8 @@ export class createCustomerConsumer {
 
                 const address = Address.create({externalId: data.id, ...data})
 
+                console.log(address)
+
                 await this.consumerRepository.createAddress(address)
             }
         })

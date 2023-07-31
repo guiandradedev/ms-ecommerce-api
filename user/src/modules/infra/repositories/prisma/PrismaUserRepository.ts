@@ -1,6 +1,6 @@
 import { IUserRepository } from "@/modules/repositories";
 import { prismaUserToEntity } from "@/modules/mappers/prisma";
-import { prismaClient } from "@/infra/database/prisma";
+import { prismaClient } from "@/shared/core/database/prisma";
 import { Address, Phone, User } from "@/modules/domain";
 import { Address as PrismaAddress } from '@prisma/client'
 
@@ -26,8 +26,8 @@ export class PrismaUserRepository implements IUserRepository {
         const { address, phone, ...rest } = data.props
 
         await prismaClient.user.create({ data: { ...rest, id: data.id } })
-        await this.createAddress(address)
-        await this.createPhone(phone)
+        if(address) await this.createAddress(address)
+        if(phone) await this.createPhone(phone)
     }
 
     async createAddress(data: Address | Address[]): Promise<void> {

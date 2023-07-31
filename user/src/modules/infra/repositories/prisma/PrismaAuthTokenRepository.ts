@@ -1,4 +1,4 @@
-import { prismaClient } from "@/infra/database/prisma";
+import { prismaClient } from "@/shared/core/database/prisma";
 import { AuthToken } from "@/modules/domain";
 import { IAuthTokenRepository } from "@/modules/repositories";
 

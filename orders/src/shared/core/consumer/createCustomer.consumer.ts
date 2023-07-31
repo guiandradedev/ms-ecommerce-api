@@ -23,12 +23,14 @@ export class createCustomerConsumer {
             topic: 'CUSTOMER_CREATED', eachMessage: async ({ message }) => {
                 const messageToString = message.value!.toString()
                 const data = JSON.parse(messageToString) as CreateCustomerRequest
-
+                
                 const customer = Customer.create({
                     email: data.email,
                     externalId: data.id,
                     role: data.role,
                 })
+
+                console.log(customer)
 
                 await this.consumerRepository.create(customer)
             }

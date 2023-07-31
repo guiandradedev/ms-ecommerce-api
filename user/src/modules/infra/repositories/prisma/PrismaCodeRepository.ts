@@ -1,4 +1,4 @@
-import { prismaClient } from "@/infra/database/prisma";
+import { prismaClient } from "@/shared/core/database/prisma";
 import { Code } from "@/modules/domain";
 import { prismaCodeToEntity } from "@/modules/mappers/prisma";
 import { FindByCode, FindByCodeAndUserId, FindCodeByUserId, ICodeRepository } from "@/modules/repositories";
