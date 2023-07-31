@@ -15,6 +15,7 @@ import { InMemoryAuthTokenRepository } from '@/modules/repositories/inMemory/InM
 import { UserTokenResponse } from '@/modules/protocols/authenticateUserDTO';
 import { SecurityDecryptResponse } from '@/modules/adapters/SecurityAdapter/ISecurityAdapter';
 import { JwtSecurityAdapter } from '@/modules/adapters/SecurityAdapter/implementations/JwtSecurityAdapter';
+import { InMemoryMailAdapter } from '@/shared/adapters/MailAdapter';
 
 describe('Authentication', async () => {
     const makeSut = () => {
@@ -23,9 +24,10 @@ describe('Authentication', async () => {
         const codeRepository = new InMemoryCodeRepository()
         const hashAdapter = new InMemoryHashAdapter()
         const messageBrokerAdapter = new InMemoryMessageBrokerAdapter()
-        const securityAdapter = new JwtSecurityAdapter()
-        // const securityAdapter = new InMemorySecurityAdapter()
-        const userAdapter = new CreateUserUseCase(userRepository, codeRepository, hashAdapter, messageBrokerAdapter)
+        // const securityAdapter = new JwtSecurityAdapter()
+        const securityAdapter = new InMemorySecurityAdapter()
+        const mailAdapter = new InMemoryMailAdapter()
+        const userAdapter = new CreateUserUseCase(userRepository, codeRepository, hashAdapter, messageBrokerAdapter, mailAdapter)
         const sut = new AuthenticateUserUseCase(userRepository, authTokenRepository, hashAdapter, securityAdapter)
 
         return {

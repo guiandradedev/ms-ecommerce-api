@@ -3,8 +3,10 @@ import { Code, User } from "@/modules/domain";
 import { CreateUserRequest } from "@/modules/protocols";
 import { ICodeRepository, IUserRepository } from "@/modules/repositories";
 import { GenerateUserCode } from "@/modules/utils/GenerateUserCode";
+import { IMailAdapter } from "@/shared/adapters/MailAdapter";
 import { IMessageBrokerAdapter } from "@/shared/adapters/MessageBrokerAdapter/IMessageBrokerAdapter";
 import { ErrAlreadyExists } from "@/shared/errors";
+import { SendUserMail } from "@/shared/helpers/mail";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
@@ -17,7 +19,9 @@ export class CreateUserUseCase {
         @inject('HashAdapter')
         private readonly hashAdapter: IHashAdapter,
         @inject('MessageBrokerAdapter')
-        private readonly messageBrokerAdapter: IMessageBrokerAdapter
+        private readonly messageBrokerAdapter: IMessageBrokerAdapter,
+        @inject('MailAdapter')
+        private mailAdapter: IMailAdapter
     ) { }
 
     async execute({ name, email, cpf, password, active, address, role, createdAt, phone }: CreateUserRequest): Promise<User> {
@@ -44,7 +48,24 @@ export class CreateUserUseCase {
 
         await this.userRepository.create(user)
 
-        if (!active) {
+        if (active) {
+            //send messages to services
+            const userCreatedMessage = {
+                id: user.id,
+                email: user.props.email,
+                role: user.props.role
+            }
+
+            await this.messageBrokerAdapter.sendMessage('CUSTOMER_CREATED', userCreatedMessage)
+
+            if (address) {
+                const userAddressCreated = {
+                    id: address.id,
+                    ...address.props
+                }
+                await this.messageBrokerAdapter.sendMessage('CUSTOMER_ADDRESS_CREATED', userAddressCreated)
+            }
+        } else {
             const generateUserCode = new GenerateUserCode()
 
             const date = new Date();
@@ -62,25 +83,10 @@ export class CreateUserUseCase {
             })
             await this.codeRepository.create(userCode)
 
-            // const sendUserMail = new SendUserMail(this.mailAdapter)
-            // await sendUserMail.authMail({ to: email, code })
+            const sendUserMail = new SendUserMail(this.mailAdapter)
+            await sendUserMail.authMail({ to: email, code, expiresIn })
         }
 
-        const userCreatedMessage = {
-            id: user.id,
-            email: user.props.email,
-            role: user.props.role
-        }
-
-        await this.messageBrokerAdapter.sendMessage('CUSTOMER_CREATED', userCreatedMessage)
-
-        if (address) {
-            const userAddressCreated = {
-                id: address.id,
-                ...address.props
-            }
-            await this.messageBrokerAdapter.sendMessage('CUSTOMER_ADDRESS_CREATED', userAddressCreated)
-        }
 
         return user
     }

@@ -50,4 +50,28 @@ export class PrismaUserRepository implements IUserRepository {
         }
     }
 
+    async findById(id: string): Promise<User | null> {
+        const user = await prismaClient.user.findUnique({ where: { id } })
+
+        if (!user) return null;
+
+        return prismaUserToEntity(user);
+    }
+
+    async changeStatus(id: string): Promise<boolean> {
+        const user = await this.findById(id)
+        if(!user) return null;
+
+        const status = !user.props.active
+
+        await prismaClient.user.update({
+            where: {id},
+            data: {
+                active: status
+            }
+        })
+
+        return status
+    }
+
 }

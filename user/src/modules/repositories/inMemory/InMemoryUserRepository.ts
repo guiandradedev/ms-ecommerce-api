@@ -38,4 +38,20 @@ export class InMemoryUserRepository implements IUserRepository {
         if (!user) return null;
         return user;
     }
+
+    async findById(id: string): Promise<User | null> {
+        const user = this.users.find(user => user.id === id)
+
+        if(!user) return null;
+
+        return User.create({...user.props}, user.id);
+    }
+
+    async changeStatus(id: string): Promise<boolean> {
+        const data = this.users.find(user=>user.id === id)
+        if(!data) return null;
+        const status = !data.props.active
+        data.props.active = status
+        return status; 
+    }
 }

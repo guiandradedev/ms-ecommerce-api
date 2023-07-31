@@ -10,7 +10,7 @@ import { inject, injectable } from "tsyringe";
 @injectable()
 export class AuthenticateUserUseCase {
     constructor(
-        @inject('UsersRepository')
+        @inject('UserRepository')
         private userRepository: IUserRepository,
 
         @inject('AuthTokenRepository')
@@ -31,7 +31,7 @@ export class AuthenticateUserUseCase {
         const checkPassword = await this.hashAdapter.compare(password, user.props.password);
         if (!checkPassword) throw new ErrInvalidParam('email or password incorrect')
 
-        // if(!user.props.active) throw new ErrNotActive('user')
+        if(!user.props.active) throw new ErrNotActive('user')
 
         const newUserInstance = User.create({...user.props}, user.id)
 

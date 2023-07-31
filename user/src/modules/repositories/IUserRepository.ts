@@ -6,4 +6,6 @@ export interface IUserRepository extends IPhoneRepository, IAddressRepository{
     create(data: User): Promise<void>;
     findByEmail(email: string): Promise<User>
     findByCpf(cpf: string): Promise<User>
+    findById(id: string): Promise<User>
+    changeStatus(id: string): Promise<boolean>;
 }
