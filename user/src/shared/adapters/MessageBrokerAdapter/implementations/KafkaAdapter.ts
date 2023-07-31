@@ -5,7 +5,7 @@ export class KafkaAdapter implements IMessageBrokerAdapter {
     private readonly kafka: Kafka = null
     constructor() {
         this.kafka = new Kafka({
-            brokers: process.env.KAFKA_BROKERS,
+            brokers: [process.env.KAFKA_BROKERS],
             sasl: {
                 mechanism: 'scram-sha-256',
                 username: process.env.KAFKA_USERNAME,
@@ -16,7 +16,7 @@ export class KafkaAdapter implements IMessageBrokerAdapter {
     }
 
     private async consumer(topic: string): Promise<Consumer> {
-        const consumer = this.kafka.consumer({ groupId: 'ORDER_APP' })
+        const consumer = this.kafka.consumer({ groupId: 'USER_APP' })
         await consumer.connect()
 
         await consumer.subscribe({ topic, fromBeginning: true })

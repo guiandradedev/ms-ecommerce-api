@@ -1,25 +1,32 @@
 import 'reflect-metadata'
 
 import { ErrServerError } from '@/shared/errors';
-// import { ISecurityAdapter } from '@/modules/user/adapters';
 import { ITokens } from "@/types/token.types";
+import { ISecurityAdapter } from '@/modules/adapters/SecurityAdapter/ISecurityAdapter';
+import { TypeUserRoles } from '@/modules/domain';
+
+export type CreateSessionRequest = {
+    email: string,
+    id: string,
+    role: TypeUserRoles
+}
 
 class CreateSession {
     constructor(
         private securityAdapter: ISecurityAdapter
     ) { }
-    async execute(email: string, _id: string): Promise<ITokens> {
+    async execute({ email, id, role }: CreateSessionRequest): Promise<ITokens> {
         try {
-            _id = _id.toString();
-
-            const accessToken = this.securityAdapter.encrypt({}, process.env.ACCESS_TOKEN, {
-                subject: _id,
-                expiresIn: process.env.EXPIRES_IN_TOKEN,
+            const userDataPayload = { id, email, role }
+            
+            const accessToken = await this.securityAdapter.encrypt(userDataPayload, process.env.ACCESS_TOKEN, {
+                subject: id,
+                expiresIn: Number(process.env.EXPIRES_IN_TOKEN),
             })
 
-            const refreshToken = this.securityAdapter.encrypt({ email }, process.env.REFRESH_TOKEN, {
-                subject: _id,
-                expiresIn: process.env.EXPIRES_IN_REFRESH_TOKEN,
+            const refreshToken = await this.securityAdapter.encrypt({ email }, process.env.REFRESH_TOKEN, {
+                subject: id,
+                expiresIn: Number(process.env.EXPIRES_IN_REFRESH_TOKEN),
             });
 
             const refreshTokenExpiresDate = new Date(new Date().getTime() + Number(process.env.EXPIRES_IN_TOKEN))

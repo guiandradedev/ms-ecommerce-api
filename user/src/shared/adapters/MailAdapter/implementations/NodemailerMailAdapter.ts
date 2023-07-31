@@ -21,7 +21,7 @@ export class NodemailerMailAdapter implements IMailAdapter {
             this.createConnection(_options);
         }
     }
-    async sendMail(_options: SendMailRequest | SendMailRequest & CreateMailConnectionRequest): Promise<boolean> {
+    async sendMail(_options: SendMailRequest | SendMailRequest & CreateMailConnectionRequest): Promise<void> {
         if ('host' in _options) {
             this.createConnection({auth: _options.auth, host: _options.host, port: _options.port})
         } else {
@@ -37,7 +37,6 @@ export class NodemailerMailAdapter implements IMailAdapter {
                 to: _options.to,
             })
 
-            return true;
         } catch (error) {
             throw new ErrServerError()
         }

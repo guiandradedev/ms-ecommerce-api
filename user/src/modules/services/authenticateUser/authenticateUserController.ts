@@ -3,7 +3,7 @@ import { container } from "tsyringe";
 import { AuthenticateUserUseCase } from "./authenticateUserUseCase";
 import { AppError, ErrInvalidParam, ErrServerError } from "@/shared/errors";
 import { AuthenticateUserRequest } from "@/modules/protocols/authenticateUserDTO";
-import { userResponse } from "@/shared/helpers/response";
+import { userTokenResponse } from "@/shared/helpers/response";
 
 export class AuthenticateUserController {
 
@@ -20,7 +20,7 @@ export class AuthenticateUserController {
                 password
             })
 
-            return response.status(200).json({data: userResponse(user)});
+            return response.status(200).json({data: userTokenResponse(user)});
         } catch (error) {
             if(error instanceof AppError) {
                 return response.status(error.status).json({ errors: [error] })

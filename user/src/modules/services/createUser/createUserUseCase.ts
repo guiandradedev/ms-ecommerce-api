@@ -5,12 +5,18 @@ import { ICodeRepository, IUserRepository } from "@/modules/repositories";
 import { GenerateUserCode } from "@/modules/utils/GenerateUserCode";
 import { IMessageBrokerAdapter } from "@/shared/adapters/MessageBrokerAdapter/IMessageBrokerAdapter";
 import { ErrAlreadyExists } from "@/shared/errors";
+import { inject, injectable } from "tsyringe";
 
+@injectable()
 export class CreateUserUseCase {
     constructor(
+        @inject('UserRepository')
         private readonly userRepository: IUserRepository,
+        @inject('CodeRepository')
         private readonly codeRepository: ICodeRepository,
+        @inject('HashAdapter')
         private readonly hashAdapter: IHashAdapter,
+        @inject('MessageBrokerAdapter')
         private readonly messageBrokerAdapter: IMessageBrokerAdapter
         ) { }
 
@@ -56,7 +62,7 @@ export class CreateUserUseCase {
             // await sendUserMail.authMail({ to: email, code })
         }
 
-        // await this.messageBrokerAdapter.sendMessage('CONSUMER_CREATED', user)
+        await this.messageBrokerAdapter.sendMessage('CUSTOMER_CREATED',  user)
         return user
     }
 }
