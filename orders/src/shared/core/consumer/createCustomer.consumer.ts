@@ -1,12 +1,12 @@
-import { IMessageBrokerAdapter, KafkaAdapter } from "@/shared/adapters/MessageBrokerAdapter";
-import { prismaClient } from "../database/prisma";
-import { ICustomerRepository } from "@/modules/repositories/ICustomerRepository";
-import { InMemoryCustomerRepository } from "@/modules/repositories/inMemory/InMemoryCustomerRepository";
+import { IMessageBrokerAdapter } from "@/shared/adapters/MessageBrokerAdapter";
 import { injectable, inject } from "tsyringe";
+import { Customer } from "@/modules/domain";
+import { ICustomerRepository } from "@/modules/repositories/ICustomerRepository";
 
-type CustomerConsumer = {
+export type CreateCustomerRequest = {
+    id: string,
     email: string,
-    id: string
+    role: string
 }
 
 @injectable()
@@ -16,14 +16,22 @@ export class createCustomerConsumer {
         private readonly messageBrokerAdapter: IMessageBrokerAdapter,
         @inject('CustomerRepository')
         private readonly consumerRepository: ICustomerRepository
-    ) {}
+    ) { }
 
     async execute() {
-        await this.messageBrokerAdapter.consume({topic: 'CUSTOMER_CREATED', eachMessage: async ({message}) => {
-            const messageToString = message.value!.toString()
-            const data = JSON.parse(messageToString) as CustomerConsumer
-            
-            // await this.consumerRepository
-        }})
+        await this.messageBrokerAdapter.consume({
+            topic: 'CUSTOMER_CREATED', eachMessage: async ({ message }) => {
+                const messageToString = message.value!.toString()
+                const data = JSON.parse(messageToString) as CreateCustomerRequest
+
+                const customer = Customer.create({
+                    email: data.email,
+                    externalId: data.id,
+                    role: data.role,
+                })
+
+                await this.consumerRepository.create(customer)
+            }
+        })
     }
 }

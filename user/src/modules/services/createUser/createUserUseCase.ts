@@ -18,15 +18,15 @@ export class CreateUserUseCase {
         private readonly hashAdapter: IHashAdapter,
         @inject('MessageBrokerAdapter')
         private readonly messageBrokerAdapter: IMessageBrokerAdapter
-        ) { }
+    ) { }
 
-    async execute({name, email, cpf, password, active, address, role, createdAt}: CreateUserRequest): Promise<User> {
+    async execute({ name, email, cpf, password, active, address, role, createdAt, phone }: CreateUserRequest): Promise<User> {
         const userMailExists = await this.userRepository.findByEmail(email)
-        if(userMailExists) throw new ErrAlreadyExists('User')
-        
+        if (userMailExists) throw new ErrAlreadyExists('User')
+
         const userCpfExists = await this.userRepository.findByCpf(cpf)
-        if(userCpfExists) throw new ErrAlreadyExists('User')
-        
+        if (userCpfExists) throw new ErrAlreadyExists('User')
+
         const passwordHash = await this.hashAdapter.hash(password)
         password = passwordHash;
 
@@ -38,7 +38,8 @@ export class CreateUserUseCase {
             email,
             password,
             role: role ?? "USER",
-            // address
+            address,
+            phone
         })
 
         await this.userRepository.create(user)
@@ -65,7 +66,22 @@ export class CreateUserUseCase {
             // await sendUserMail.authMail({ to: email, code })
         }
 
-        await this.messageBrokerAdapter.sendMessage('CUSTOMER_CREATED',  user)
+        const userCreatedMessage = {
+            id: user.id,
+            email: user.props.email,
+            role: user.props.role
+        }
+
+        await this.messageBrokerAdapter.sendMessage('CUSTOMER_CREATED', userCreatedMessage)
+
+        if (address) {
+            const userAddressCreated = {
+                id: address.id,
+                ...address.props
+            }
+            await this.messageBrokerAdapter.sendMessage('CUSTOMER_ADDRESS_CREATED', userAddressCreated)
+        }
+
         return user
     }
 }

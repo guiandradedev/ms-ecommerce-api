@@ -1,4 +1,4 @@
-import { Address, TypeUserRoles } from "../domain"
+import { Address, Phone, TypeUserRoles } from "../domain"
 
 export type CreateUserRequest = {
     name: string,
@@ -6,7 +6,8 @@ export type CreateUserRequest = {
     cpf: string,
     password: string,
     role?: TypeUserRoles,
-    address?: Address | Address[],
+    address?: Address,
+    phone?: Phone | Phone[],
     active?: boolean,
     createdAt?: Date
 }

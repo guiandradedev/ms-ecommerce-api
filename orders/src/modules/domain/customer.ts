@@ -1,9 +1,11 @@
 import { Entity } from "@/shared/core/entity";
+import { Address } from "./address";
 
 type CustomerProps = {
-    id: string,
     externalId: string,
-    email: string
+    email: string,
+    role: string,
+    address?: Address | Address[]
 }
 
 export class Customer extends Entity<CustomerProps> {

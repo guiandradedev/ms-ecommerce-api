@@ -3,6 +3,7 @@ import { Entity } from "@/shared/core/entity";
 export type FromSharedDomains = 'CONSUMER' | 'PROVIDER'
 
 type AddressProps = {
+    externalId: string,
     city: string,
     street: string,
     country: string,
