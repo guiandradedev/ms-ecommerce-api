@@ -1,5 +1,6 @@
 import { Entity } from "@/shared/core/entity";
 import { Address } from "./address";
+import { Phone } from "./phone";
 
 export type TypeUserRoles = 'USER' | 'ADMIN'
 
@@ -10,6 +11,7 @@ type UserProps = {
     password: string,
     role: TypeUserRoles,
     address?: Address | Address[],
+    phone?: Phone | Phone[],
     active: boolean,
     createdAt: Date
 }

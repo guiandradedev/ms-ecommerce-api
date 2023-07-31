@@ -1,20 +1,23 @@
-import { IHashAdapter, InMemoryHashAdapter } from "@/modules/adapters/HashAdapter";
-import { ICodeRepository, IUserRepository } from "@/modules/repositories";
-import { InMemoryCodeRepository } from "@/modules/repositories/inMemory/InMemoryCodeRepository";
-import { InMemoryUserRepository } from "@/modules/repositories/inMemory/InMemoryUserRepository";
-import { IMailAdapter, NodemailerMailAdapter } from "@/shared/adapters/MailAdapter";
-import { IMessageBrokerAdapter, KafkaAdapter } from "@/shared/adapters/MessageBrokerAdapter";
 import { container } from "tsyringe";
 
-//Repositories
+import { IAuthTokenRepository, ICodeRepository, IUserRepository } from "@/modules/repositories";
+
+import { PrismaAuthTokenRepository } from "@/modules/infra/repositories/prisma/PrismaAuthTokenRepository";
+import { PrismaCodeRepository } from "@/modules/infra/repositories/prisma/PrismaCodeRepository";
+import { PrismaUserRepository } from "@/modules/infra/repositories/prisma/PrismaUserRepository";
+
+import { BcryptHashAdapter, IHashAdapter } from "@/modules/adapters/HashAdapter";
+import { IMailAdapter, NodemailerMailAdapter } from "@/shared/adapters/MailAdapter";
+import { IMessageBrokerAdapter, KafkaAdapter } from "@/shared/adapters/MessageBrokerAdapter";
+
 container.registerSingleton<IUserRepository>(
     "UserRepository",
-    InMemoryUserRepository
+    PrismaUserRepository
 )
 
 container.registerInstance<IHashAdapter>(
     "HashAdapter",
-    new InMemoryHashAdapter()
+    new BcryptHashAdapter(12)
 )
 
 container.registerSingleton<IMessageBrokerAdapter>(
@@ -24,8 +27,14 @@ container.registerSingleton<IMessageBrokerAdapter>(
 
 container.registerSingleton<ICodeRepository>(
     "CodeRepository",
-    InMemoryCodeRepository
+    PrismaCodeRepository
 )
+
+container.registerSingleton<IAuthTokenRepository>(
+    "AuthTokenRepository",
+    PrismaAuthTokenRepository
+)
+
 
 container.registerInstance<IMailAdapter>(
     "MailAdapter",

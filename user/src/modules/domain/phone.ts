@@ -3,7 +3,7 @@ import { Entity } from "@/shared/core/entity";
 export type FromSharedDomains = 'CONSUMER' | 'PROVIDER'
 
 type PhoneProps = {
-    country_code: number,
+    countryCode: number,
     ddd: number,
     phone: number,
     from: FromSharedDomains,

@@ -1,5 +1,5 @@
 import { Phone } from "@/modules/domain";
 
 export interface IPhoneRepository {
-    createPhone(data: Phone): Promise<void>
+    createPhone(data: Phone | Phone[]): Promise<void>
 }
