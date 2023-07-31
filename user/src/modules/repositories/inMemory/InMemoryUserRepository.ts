@@ -21,4 +21,10 @@ export class InMemoryUserRepository implements IUserRepository {
         if(!user) return null;
         return user;
     }
+
+    async findByCpf(cpf: string): Promise<User> {
+        const user = this.users.find(user=>user.props.cpf == cpf)
+        if(!user) return null;
+        return user;
+    }
 }

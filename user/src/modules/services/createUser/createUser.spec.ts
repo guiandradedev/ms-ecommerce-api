@@ -34,7 +34,7 @@ describe('Create User', () => {
         expect(user).toBeInstanceOf(User)
     })
 
-    it('should not create another user', async () => {
+    it('should not create another user (email)', async () => {
         const { sut } = await makeSut()
 
         await sut.execute({
@@ -47,6 +47,26 @@ describe('Create User', () => {
         const user = sut.execute({
             name: "valid name",
             email: "valid_email@mail.com",
+            cpf: "valid_cpf",
+            password: "teste123"
+        })
+
+        expect(user).rejects.toBeInstanceOf(ErrAlreadyExists)
+    })
+
+    it('should not create another user (cpf)', async () => {
+        const { sut } = await makeSut()
+
+        await sut.execute({
+            name: "valid name",
+            email: "valid_email@mail.com",
+            cpf: "valid_cpf",
+            password: "teste123"
+        })
+
+        const user = sut.execute({
+            name: "valid name",
+            email: "valid_email2@mail.com",
             cpf: "valid_cpf",
             password: "teste123"
         })

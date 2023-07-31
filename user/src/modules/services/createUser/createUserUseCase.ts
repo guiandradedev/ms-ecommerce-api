@@ -21,9 +21,12 @@ export class CreateUserUseCase {
         ) { }
 
     async execute({name, email, cpf, password, active, address, role, createdAt}: CreateUserRequest): Promise<User> {
-        const userExists = await this.userRepository.findByEmail(email)
-        if(userExists) throw new ErrAlreadyExists('User')
-
+        const userMailExists = await this.userRepository.findByEmail(email)
+        if(userMailExists) throw new ErrAlreadyExists('User')
+        
+        const userCpfExists = await this.userRepository.findByCpf(cpf)
+        if(userCpfExists) throw new ErrAlreadyExists('User')
+        
         const passwordHash = await this.hashAdapter.hash(password)
         password = passwordHash;
 
