@@ -20,9 +20,11 @@ export class createCustomerConsumer {
 
     async execute() {
         await this.messageBrokerAdapter.consume({
-            topic: 'CUSTOMER_CREATED', eachMessage: async ({ message }) => {
+            topic: 'CUSTOMER_CREATED', groupId: "ORDER_CUSTOMER_CREATED", eachMessage: async ({ message }) => {
                 const messageToString = message.value!.toString()
                 const data = JSON.parse(messageToString) as CreateCustomerRequest
+
+                console.log(data)
                 
                 const customer = Customer.create({
                     email: data.email,

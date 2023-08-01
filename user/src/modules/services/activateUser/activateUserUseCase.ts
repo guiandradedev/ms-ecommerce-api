@@ -2,7 +2,6 @@ import { Code } from "@/modules/domain";
 import { ActivateUserRequest } from "@/modules/protocols/activateUserDTO";
 import { ICodeRepository, IUserRepository } from "@/modules/repositories";
 import { GenerateUserCode } from "@/modules/utils/GenerateUserCode";
-import { IMailAdapter } from "@/shared/adapters/MailAdapter";
 import { IMessageBrokerAdapter } from "@/shared/adapters/MessageBrokerAdapter";
 import { ErrAlreadyActive, ErrInvalidParam, ErrNotFound } from "@/shared/errors";
 import { ErrExpired } from "@/shared/errors/ErrExpired";
@@ -17,9 +16,6 @@ export class ActivateUserUseCase {
 
         @inject('CodeRepository')
         private codeRepository: ICodeRepository,
-
-        @inject('MailAdapter')
-        private mailAdapter: IMailAdapter,
 
         @inject('MessageBrokerAdapter')
         private readonly messageBrokerAdapter: IMessageBrokerAdapter,
@@ -50,8 +46,10 @@ export class ActivateUserUseCase {
             })
             await this.codeRepository.create(activateCode)
 
-            const sendUserMail = new SendUserMail(this.mailAdapter)
-            sendUserMail.authMail({ to: userExists.props.email, code, expiresIn })
+            const sendUserMail = new SendUserMail()
+            const mail = sendUserMail.authMail({ to: userExists.props.email, code, expiresIn })
+
+            await this.messageBrokerAdapter.sendMessage('SEND_MAIL', mail)
 
             throw new ErrExpired('code')
         }

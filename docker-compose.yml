@@ -1,0 +1,66 @@
+version: '3'
+
+services:
+    zookeeper:
+        image: confluentinc/cp-zookeeper:latest
+        environment:
+            ZOOKEEPER_CLIENT_PORT: 2181
+
+    kafka:
+        image: confluentinc/cp-kafka:latest
+        depends_on:
+            - zookeeper
+        ports:
+            - 9092:9092
+        environment:
+            KAFKA_BROKER_ID: 1
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+            KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+            KAFKA_LISTENERS: INTERNAL://:9092
+            KAFKA_ADVERTISED_LISTENERS: INTERNAL://localhost:9092
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT
+
+    ecommerce_user:
+        image: postgres:alpine
+        restart: always
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: ecommerce_user
+        ports:
+            - 5432:5432
+        volumes:
+            - ecommerce_user:/var/lib/postgresql/data
+
+    ecommerce_orders:
+        image: postgres:alpine
+        restart: always
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: ecommerce_orders
+        ports:
+            - 5432:5432
+        volumes:
+            - ecommerce_orders:/var/lib/postgresql/data
+
+    ecommerce_mail:
+        image: postgres:alpine
+        restart: always
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: ecommerce_mail
+        ports:
+            - 5432:5432
+        volumes:
+            - ecommerce_mail:/var/lib/postgresql/data
+
+volumes:
+    ecommerce_user:
+        driver: local
+    ecommerce_orders:
+        driver: local
+    ecommerce_mail:
+        driver: local

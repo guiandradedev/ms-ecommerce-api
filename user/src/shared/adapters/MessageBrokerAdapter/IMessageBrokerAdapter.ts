@@ -1,6 +1,7 @@
 export type IMessageBrokerConsumeRequest = {
     topic: string;
-    eachMessage: (data: any)=>Promise<void>
+    groupId: string;
+    eachMessage: (data: any)=>Promise<void>;
 }
 
 export interface IMessageBrokerAdapter {

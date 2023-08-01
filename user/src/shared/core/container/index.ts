@@ -7,7 +7,6 @@ import { PrismaCodeRepository } from "@/modules/infra/repositories/prisma/Prisma
 import { PrismaUserRepository } from "@/modules/infra/repositories/prisma/PrismaUserRepository";
 
 import { BcryptHashAdapter, IHashAdapter } from "@/modules/adapters/HashAdapter";
-import { IMailAdapter, NodemailerMailAdapter } from "@/shared/adapters/MailAdapter";
 import { IMessageBrokerAdapter, KafkaAdapter } from "@/shared/adapters/MessageBrokerAdapter";
 import { ISecurityAdapter } from "@/modules/adapters/SecurityAdapter/ISecurityAdapter";
 import { JwtSecurityAdapter } from "@/modules/adapters/SecurityAdapter/implementations/JwtSecurityAdapter";
@@ -40,9 +39,4 @@ container.registerSingleton<IAuthTokenRepository>(
 container.registerSingleton<ISecurityAdapter>(
     "SecurityAdapter",
     JwtSecurityAdapter
-)
-
-container.registerInstance<IMailAdapter>(
-    "MailAdapter",
-    new NodemailerMailAdapter()
 )

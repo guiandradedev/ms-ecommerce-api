@@ -27,15 +27,15 @@ export class createCustomerConsumer {
 
     async execute() {
         await this.messageBrokerAdapter.consume({
-            topic: 'CUSTOMER_ADDRESS_CREATED', eachMessage: async ({ message }) => {
+            topic: 'CUSTOMER_ADDRESS_CREATED', groupId: "ORDER_CUSTOMER_ADDRESS_CREATED", eachMessage: async ({ message }) => {
                 const messageToString = message.value!.toString()
                 const data = JSON.parse(messageToString) as CreateAddress
+                console.log(data)
+                // const address = Address.create({externalId: data.id, ...data})
 
-                const address = Address.create({externalId: data.id, ...data})
+                // console.log(address)
 
-                console.log(address)
-
-                await this.consumerRepository.createAddress(address)
+                // await this.consumerRepository.createAddress(address)
             }
         })
     }

@@ -1,23 +1,16 @@
+import { kafkaInstance } from "@/infra/providers/kafka/client";
 import { IMessageBrokerAdapter, IMessageBrokerConsumeRequest } from "../IMessageBrokerAdapter";
-import { Consumer, EachMessageHandler, Kafka } from "kafkajs";
+import { Consumer, Kafka } from "kafkajs";
 
 export class KafkaAdapter implements IMessageBrokerAdapter {
     private readonly kafka: Kafka = null
     constructor() {
-        this.kafka = new Kafka({
-            brokers: [process.env.KAFKA_BROKERS],
-            sasl: {
-                mechanism: 'scram-sha-256',
-                username: process.env.KAFKA_USERNAME,
-                password: process.env.KAFKA_PASSWORD
-            },
-            ssl: true,
-        })
+        this.kafka = kafkaInstance
     }
 
-    private async consumer(topic: string): Promise<Consumer> {
-        const consumer = this.kafka.consumer({ groupId: 'USER_APP' })
-        await consumer.connect()
+    private async consumer(topic: string, groupId: string): Promise<Consumer> {
+        const consumer = this.kafka.consumer({ groupId })
+        await consumer.connect().then(()=>console.log(`${topic} is online`))
 
         await consumer.subscribe({ topic, fromBeginning: true })
 
@@ -31,7 +24,6 @@ export class KafkaAdapter implements IMessageBrokerAdapter {
 
         await producer.connect()
         console.log(`Message sent to topic ${topic}`)
-        console.log(payload)
         await producer.send({
             topic,
             messages: [
@@ -42,8 +34,8 @@ export class KafkaAdapter implements IMessageBrokerAdapter {
         await producer.disconnect()
     }
 
-    async consume({topic, eachMessage}: IMessageBrokerConsumeRequest): Promise<void> {
-        const consumer = await this.consumer(topic)
+    async consume({topic, eachMessage, groupId}: IMessageBrokerConsumeRequest): Promise<void> {
+        const consumer = await this.consumer(topic, groupId)
         await consumer.run({
             eachMessage
         })

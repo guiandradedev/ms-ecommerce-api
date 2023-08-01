@@ -1,7 +1,6 @@
 import 'reflect-metadata'
 import { InMemoryHashAdapter } from '@/modules/adapters/HashAdapter';
 import { InMemoryCodeRepository, InMemoryUserRepository } from '@/modules/repositories/inMemory';
-import { InMemoryMailAdapter } from '@/shared/adapters/MailAdapter';
 import { InMemoryMessageBrokerAdapter } from '@/shared/adapters/MessageBrokerAdapter';
 
 import { describe, expect, it, vitest } from "vitest";
@@ -18,8 +17,7 @@ describe("ActivateUserCode", () => {
         const codeRepository = new InMemoryCodeRepository()
         const hashAdapter = new InMemoryHashAdapter()
         const messageBrokerAdapter = new InMemoryMessageBrokerAdapter()
-        const mailAdapter = new InMemoryMailAdapter()
-        const userAdapter = new CreateUserUseCase(userRepository, codeRepository, hashAdapter, messageBrokerAdapter, mailAdapter)
+        const userAdapter = new CreateUserUseCase(userRepository, codeRepository, hashAdapter, messageBrokerAdapter)
 
         const user = await userAdapter.execute({
             name: "Flaamer",
@@ -30,13 +28,12 @@ describe("ActivateUserCode", () => {
 
         const code = await codeRepository.findByUserId({userId: user.id, type: 'ACTIVATE_ACCOUNT'})
 
-        const sut = new ActivateUserUseCase(userRepository, codeRepository, mailAdapter, messageBrokerAdapter)
+        const sut = new ActivateUserUseCase(userRepository, codeRepository, messageBrokerAdapter)
 
         return { userRepository,
             codeRepository,
             hashAdapter,
             messageBrokerAdapter,
-            mailAdapter,
             code,
             sut,
             user,
@@ -83,8 +80,7 @@ describe("ActivateUserCode", () => {
         const codeRepository = new InMemoryCodeRepository()
         const hashAdapter = new InMemoryHashAdapter()
         const messageBrokerAdapter = new InMemoryMessageBrokerAdapter()
-        const mailAdapter = new InMemoryMailAdapter()
-        const userAdapter = new CreateUserUseCase(userRepository, codeRepository, hashAdapter, messageBrokerAdapter, mailAdapter)
+        const userAdapter = new CreateUserUseCase(userRepository, codeRepository, hashAdapter, messageBrokerAdapter)
 
         const generateActivateCode = vitest.spyOn(GenerateUserCode.prototype, 'execute')
         const date = new Date()
@@ -100,7 +96,7 @@ describe("ActivateUserCode", () => {
 
         const code = await codeRepository.findByUserId({userId: user.id, type: 'ACTIVATE_ACCOUNT'})
 
-        const sut = new ActivateUserUseCase(userRepository, codeRepository, mailAdapter, messageBrokerAdapter)
+        const sut = new ActivateUserUseCase(userRepository, codeRepository, messageBrokerAdapter)
 
         const activateCode = sut.execute({
             userId: user.id,
@@ -115,10 +111,10 @@ describe("ActivateUserCode", () => {
         const { sut, userAdapter } = await makeSut();
         const user = await userAdapter.execute({
             name: "Flaamer",
-            email: "teste1@teste.com",
+            email: "teste2@teste.com",
             password: "teste123",
             active: true,
-            cpf: "855.031.300-90"
+            cpf: "624.751.890-02"
         })
 
         const activateUser = sut.execute({

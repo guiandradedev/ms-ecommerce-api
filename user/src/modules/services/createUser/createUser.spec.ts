@@ -8,7 +8,6 @@ import { ErrAlreadyExists, ErrInvalidParam } from '@/shared/errors'
 import { InMemoryHashAdapter } from '@/modules/adapters/HashAdapter'
 import { InMemoryCodeRepository } from '@/modules/repositories/inMemory/InMemoryCodeRepository'
 import { InMemoryMessageBrokerAdapter } from '@/shared/adapters/MessageBrokerAdapter'
-import { InMemoryMailAdapter } from '@/shared/adapters/MailAdapter'
 
 describe('Create User', () => {
 
@@ -17,8 +16,7 @@ describe('Create User', () => {
         const codeRepository = new InMemoryCodeRepository()
         const hashAdapter = new InMemoryHashAdapter()
         const messageBrokerAdapter = new InMemoryMessageBrokerAdapter()
-        const mailAdapter = new InMemoryMailAdapter()
-        const sut = new CreateUserUseCase(userRepository, codeRepository, hashAdapter, messageBrokerAdapter, mailAdapter)
+        const sut = new CreateUserUseCase(userRepository, codeRepository, hashAdapter, messageBrokerAdapter)
 
         return { userRepository, sut }
     }

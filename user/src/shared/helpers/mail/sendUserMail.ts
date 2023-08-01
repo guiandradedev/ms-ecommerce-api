@@ -1,14 +1,13 @@
-import { IMailAdapter } from "@/shared/adapters/MailAdapter";
 import { authMail } from "./mails";
-import { AuthMailRequest, TypePasswordResetConfirmationMail, IUserMail } from "./user-mail";
+import { AuthMailRequest, TypePasswordResetConfirmationMail, IUserMail, MailHelperResponse } from "./user-mail";
+
 
 export class SendUserMail implements IUserMail {
     constructor(
-        private mailAdapter: IMailAdapter
     ) { }
 
-    async authMail({ to, code, expiresIn }: AuthMailRequest): Promise<void> {
-        await this.mailAdapter.sendMail({
+    authMail({ to, code, expiresIn }: AuthMailRequest): MailHelperResponse {
+        return {
             host: process.env.MAIL_HOST,
             port: Number(process.env.MAIL_PORT),
             auth: {
@@ -20,11 +19,11 @@ export class SendUserMail implements IUserMail {
             subject: "Authentication Code",
             text: `Your access code is ${code} and it's expires in ${expiresIn}!`,
             to
-        })
+        }
     }
 
-    async resetPasswordMail({ to, code }: AuthMailRequest): Promise<void> {
-        await this.mailAdapter.sendMail({
+    resetPasswordMail({ to, code }: AuthMailRequest): MailHelperResponse {
+        return {
             host: process.env.MAIL_HOST,
             port: Number(process.env.MAIL_PORT),
             auth: {
@@ -36,11 +35,11 @@ export class SendUserMail implements IUserMail {
             subject: "Reset Password Code",
             text: `Your reset password code is ${code}`,
             to
-        })
+        }
     }
 
-    async passwordResetConfirmationMail({ to }: TypePasswordResetConfirmationMail): Promise<void> {
-        await this.mailAdapter.sendMail({
+    passwordResetConfirmationMail({ to }: TypePasswordResetConfirmationMail): MailHelperResponse {
+        return {
             host: process.env.MAIL_HOST,
             port: Number(process.env.MAIL_PORT),
             auth: {
@@ -52,7 +51,7 @@ export class SendUserMail implements IUserMail {
             subject: "Reset Password",
             text: `Your password changed!`,
             to
-        })
+        }
 
     }
 }
